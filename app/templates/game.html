@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>21 GAME</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<h2 xmlns="http://www.w3.org/1999/html">Итак, сдаем карты...</h2>
+<p><i>{{ userhands }} и это {{ mes1 }} очков.</i> </p>
+<p><i>{{ dealerhands }} - это {{ mes2 }} очков.</i></p>
+
+{% if not mes4 or mes7%}
+<form action= "/addcard" method = "get">
+        <h3>Взять еще карту?</h3>
+    <button type ="submit" value = "addcard">Взять</button>
+</form>
+<br>
+<form action= "/result" method = "get">
+     <button type ="submit" value = "result">Не брать</button>
+</form>
+{% endif %}
+
+
+{% block more %}
+{% endblock %}
+
+{% block result %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "game.html" %}
+
+
+{% block more %}
+{% if userhands1more %}
+<p><i> {{ userhands1more }}  это {{ mes3 }} очков.</i></p>
+    {% if mes4 %}
+        <h3><i>  {{ mes4 }} </i></h3>
+        <p>Начать новую игру?</p>
+        <a href="{{ url_for('startgame') }}"> Начать </a>
+    {% endif %}
+    {% if mes7 %}
+        <h3><i>  {{ mes7 }} </i></h3>
+        <p>Начать новую игру?</p>
+        <a href="{{ url_for('startgame') }}"> Начать </a>
+    {% endif %}
+{% endif %}
+{% endblock %}

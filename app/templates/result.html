@@ -1,0 +1,29 @@
+{% extends "game.html" %}
+
+
+{% block start %}
+<h2 xmlns="http://www.w3.org/1999/html">Итак, сдаем карты...</h2>
+<p><i>{{ userhands }} и это {{ mes1 }} очков.</i> </p>
+{% endblock %}
+
+{% block more %}
+{% if userhands1more %}
+<p><i> {{ userhands1more }} это {{ mes3 }} очков.</i></p>
+<h3><i>  {{ mes4 }} </i></h3>
+{% endif %}
+{% endblock %}
+
+
+{% block result %}
+<h3><i> {{ mes5 }} </i></h3>
+<p><i> {{ userhands1more }} </i></p>
+<p><i>{{ dealerhands1more }} - {{ mes6 }} очков </i></p>
+<h3><i>  {{ mes7 }} </i></h3>
+<h3><i>  {{ mes8 }} </i></h3>
+<h3><i>  {{ mes9 }} </i></h3>
+<h3><i>  {{ mes10 }} </i></h3>
+{% if mes7 or mes8 or mes9 or mes10 %}
+    <p>Начать новую игру?</p>
+    <a href="{{ url_for('startgame') }}"> Начать </a>
+{% endif %}
+{% endblock %}
