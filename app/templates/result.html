@@ -23,10 +23,14 @@
 <h4><i>  {{ mes9 }} </i></h4>
 <h4><i>  {{ mes10 }} </i></h4>
 {% if mes7 or mes8 or mes9 or mes10 %}
-    <p>Start new round?</p>
+    <h5>Start new round?</h5>
 <form action="{{url_for('index')}}" method="post">
     <input type="text" name="username" value="{{ userhand.name }}" hidden>
     <input type="submit" value="Try again">
+</form>
+<p>or</p>
+<form action="{{url_for('changeuser')}}" method="get">
+    <input type="submit" value="Change User">
 </form>
 {% endif %}
 {% endblock %}

@@ -6,7 +6,6 @@ from flask import request, redirect, url_for
 from app import app
 from game import Deck, Hand
 
-deck = Deck()
 userhand = Hand('Player')
 dealerhand = Hand("Dealer")
 in_game = True
@@ -19,19 +18,20 @@ def index():
         return render_template('index.html')
     if request.method == 'POST':
         deck = Deck()
+        userhand = Hand(request.form['username'])
         user = request.form['username']
         userhand.name = user
         dealerhand.name = 'Dealer'
         Deck()
         _id = uuid4()
-        status.update({str(_id): {'user': user, 'bot': dealerhand, 'deck': deck}})
+        status.update({str(_id): {'user': userhand, 'bot': dealerhand, 'deck': deck}})
         return redirect(url_for('startgame', id=_id))
 
 
 @app.route('/startgame', methods=['GET'])
 def startgame():
     _game = status[request.args['id']]
-    user: Hand = _game['user']
+    userhand: Hand = _game['user']
     dealerhand: Hand = _game['bot']
     deck: Deck = _game['deck']
 
@@ -53,7 +53,7 @@ def startgame():
 @app.route('/addcard')
 def addcard():
     _game = status[request.args['id']]
-    user: Hand = _game['user']
+    userhand: Hand = _game['user']
     dealerhand: Hand = _game['bot']
     deck: Deck = _game['deck']
     mes3 = ''
@@ -76,7 +76,7 @@ def addcard():
             mes4 = 'You are overkill, you have lost!'
             status.pop(request.args['id'])
             in_game = False
-    return render_template('more.html',id=request.args['id'], userhands=userhands, dealerhands=dealerhands, mes1=mes1,
+    return render_template('more.html', id=request.args['id'], userhands=userhands, dealerhands=dealerhands, mes1=mes1,
                            mes2=mes2, mes3=mes3,
                            mes4=mes4, mes5=mes5, mes6=mes6, mes7=mes7, userhands1more=userhands1more,
                            dealerhands1more=dealerhands1more, userhand=userhand)
@@ -84,9 +84,8 @@ def addcard():
 
 @app.route('/result', methods=['GET'])
 def result():
-
     _game = status[request.args['id']]
-    user: Hand = _game['user']
+    userhand: Hand = _game['user']
     dealerhand: Hand = _game['bot']
     deck: Deck = _game['deck']
     mes3 = ''
@@ -124,3 +123,8 @@ def result():
                            mes4=mes4, mes5=mes5, mes6=mes6, mes7=mes7, mes8=mes8, mes9=mes9, mes10=mes10,
                            userhands1more=userhands1more, userhand=userhand,
                            dealerhands1more=dealerhands1more)
+
+
+@app.route('/changeuser')
+def changeuser():
+    return redirect(url_for('index'))
