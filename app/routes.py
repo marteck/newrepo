@@ -1,87 +1,44 @@
+from uuid import uuid4
+
 from flask import render_template
-from flask import request, session
+from flask import request, redirect, url_for
+
 from app import app
-from random import shuffle
-
-
-class Card:
-    def __init__(self, rank, suit):
-        self.rank = rank
-        self.suit = suit
-
-    def card_value(self):
-        if self.rank in ["Десятка", "Валет", "Дама", "Король"]:
-            return 10
-        else:
-            return [" ", "Туз", "Двойка", "Тройка", "Четверка", "Пятерка", "Шестерочка", "Семерка", "Восьмерка",
-                    "Девятка"].index(self.rank)
-
-    def get_rank(self):
-        return self.rank
-
-    def __str__(self):
-        return '{} {},'.format(self.rank, self.suit)
-
-
-class Deck:
-    def __init__(self):
-        ranks = ["Двойка", "Тройка", "Четверка", "Пятерка", "Шестерочка", "Семерка", "Восьмерка", "Девятка", "Десятка",
-                 "Валет", "Дама", "Король", "Туз"]
-        suits = ["Черва", "Пик", "Бубен", "Треф"]
-        self.cards = [Card(r, s) for r in ranks for s in suits]
-        shuffle(self.cards)
-
-    def deal_card(self):
-        return self.cards.pop()
-
-    def new_4deck(self):
-        return self.cards * 4
-
-
-class Hand:
-    def __init__(self, name):
-        self.name = name
-        self.cards = []
-
-    def add_card(self, card):
-        self.cards.append(card)
-
-    def get_value(self):
-        points = 0
-        ace = 0
-        for card in self.cards:
-            points += card.card_value()
-            if card.get_rank() == "Туз":
-                ace += 1
-        if points + ace * 10 <= 21:
-            points += ace * 10
-        return points
-
-    def __str__(self):
-        message = "У {0}а на руках:".format('{}'.format(self.name))
-        for card in self.cards:
-            message += str(card) + " "
-        return message
-
+from game import Deck, Hand
 
 deck = Deck()
-userhand = Hand('Игрок')
-dealerhand = Hand("Дилер")
+userhand = Hand('Player')
+dealerhand = Hand("Dealer")
 in_game = True
+status = dict()
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    user = request.args.get("username", "")
-    userhand.name = user
+    if request.method == 'GET':
+        return render_template('index.html')
+    if request.method == 'POST':
+        deck = Deck()
+        user = request.form['username']
+        userhand.name = user
+        dealerhand.name = 'Dealer'
+        Deck()
+        _id = uuid4()
+        status.update({str(_id): {'user': user, 'bot': dealerhand, 'deck': deck}})
+        return redirect(url_for('startgame', id=_id))
+
+
+@app.route('/startgame', methods=['GET'])
+def startgame():
+    _game = status[request.args['id']]
+    user: Hand = _game['user']
+    dealerhand: Hand = _game['bot']
+    deck: Deck = _game['deck']
+
     del userhand.cards[:]
     del dealerhand.cards[:]
     Deck()
-    return render_template('index.html', user=user)
 
-
-@app.route('/startgame')
-def startgame():
     userhand.add_card(deck.deal_card())
     userhand.add_card(deck.deal_card())
     dealerhand.add_card(deck.deal_card())
@@ -89,11 +46,16 @@ def startgame():
     dealerhands = str(dealerhand)
     mes1 = userhand.get_value()
     mes2 = dealerhand.get_value()
-    return render_template('game.html', userhands=userhands, dealerhands=dealerhands, mes1=mes1, mes2=mes2)
+    return render_template('game.html', id=request.args['id'], userhands=userhands, dealerhands=dealerhands, mes1=mes1,
+                           mes2=mes2, userhand=userhand)
 
 
 @app.route('/addcard')
 def addcard():
+    _game = status[request.args['id']]
+    user: Hand = _game['user']
+    dealerhand: Hand = _game['bot']
+    deck: Deck = _game['deck']
     mes3 = ''
     mes4 = ''
     mes5 = ''
@@ -111,18 +73,25 @@ def addcard():
         userhands1more = str(userhand)
         mes3 = userhand.get_value()
         if userhand.get_value() > 21:
-            mes4 = 'Перебор. Вы проиграли!'
+            mes4 = 'You are overkill, you have lost!'
+            status.pop(request.args['id'])
             in_game = False
-    return render_template('more.html', userhands=userhands, dealerhands=dealerhands, mes1=mes1, mes2=mes2, mes3=mes3,
+    return render_template('more.html',id=request.args['id'], userhands=userhands, dealerhands=dealerhands, mes1=mes1,
+                           mes2=mes2, mes3=mes3,
                            mes4=mes4, mes5=mes5, mes6=mes6, mes7=mes7, userhands1more=userhands1more,
-                           dealerhands1more=dealerhands1more)
+                           dealerhands1more=dealerhands1more, userhand=userhand)
 
 
-@app.route('/result')
+@app.route('/result', methods=['GET'])
 def result():
+
+    _game = status[request.args['id']]
+    user: Hand = _game['user']
+    dealerhand: Hand = _game['bot']
+    deck: Deck = _game['deck']
     mes3 = ''
     mes4 = ''
-    mes5 = 'Продолжаем игру...'
+    mes5 = 'We continue the game...'
     mes6 = ''
     mes7 = ''
     mes8 = ''
@@ -141,16 +110,17 @@ def result():
             dealerhands1more = str(dealerhand)
             mes6 = dealerhand.get_value()
             if dealerhand.get_value() > 21:
-                mes7 = "Победа! У Дилера перебор. Сегодня Ваш день!"
+                mes7 = "Victory! The Dealer is overkill. It's your day today!"
                 in_game = False
     if in_game:
         if userhand.get_value() > dealerhand.get_value():
-            mes8 = "Вы победили!"
+            mes8 = "You won!"
         if userhand.get_value() == dealerhand.get_value():
-            mes9 = "Это ничья!"
+            mes9 = "It's draw game!"
         if userhand.get_value() < dealerhand.get_value():
-            mes10 = "Дилер выиграл!"
+            mes10 = "Dealer won!"
+    status.pop(request.args['id'])
     return render_template('result.html', userhands=userhands, dealerhands=dealerhands, mes1=mes1, mes2=mes2, mes3=mes3,
                            mes4=mes4, mes5=mes5, mes6=mes6, mes7=mes7, mes8=mes8, mes9=mes9, mes10=mes10,
-                           userhands1more=userhands1more,
+                           userhands1more=userhands1more, userhand=userhand,
                            dealerhands1more=dealerhands1more)

@@ -3,16 +3,23 @@
 
 {% block more %}
 {% if userhands1more %}
-<p><i> {{ userhands1more }}  это {{ mes3 }} очков.</i></p>
+<p><i> {{ userhands1more }} this is {{ mes3 }} points.</i></p>
     {% if mes4 %}
         <h3><i>  {{ mes4 }} </i></h3>
-        <p>Начать новую игру?</p>
-        <a href="{{ url_for('startgame') }}"> Начать </a>
+        <p>Should we start a new game?</p>
+        <form action="{{url_for('index')}}" method="post">
+            <input type="text" name="username" value="{{ userhand.name }}" hidden>
+            <input type="submit" value="Try again">
+        </form>
     {% endif %}
     {% if mes7 %}
         <h3><i>  {{ mes7 }} </i></h3>
-        <p>Начать новую игру?</p>
-        <a href="{{ url_for('startgame') }}"> Начать </a>
+        <p>Should we start a new game?</p>
+        <form action="{{url_for('index')}}" method="post">
+    <input type="text" name="username" value="{{ userhand.name }}" hidden>
+    <input type="submit" value="Try again">
+        </form>
+
     {% endif %}
 {% endif %}
 {% endblock %}

@@ -1,25 +1,22 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>21 GAME</title>
+    <title>GAME</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
-<h2 xmlns="http://www.w3.org/1999/html">Итак, сдаем карты...</h2>
-<p><i>{{ userhands }} и это {{ mes1 }} очков.</i> </p>
-<p><i>{{ dealerhands }} - это {{ mes2 }} очков.</i></p>
+<h2 xmlns="http://www.w3.org/1999/html"> Hello, {{ userhand.name }}! So, dealing cards...</h2>
+<p><i>{{ userhands }} and this is {{ mes1 }} points.</i> </p>
+<p><i>{{ dealerhands }} - this is {{ mes2 }} points.</i></p>
 
 {% if not mes4 or mes7%}
-<form action= "/addcard" method = "get">
-        <h3>Взять еще карту?</h3>
-    <button type ="submit" value = "addcard">Взять</button>
-</form>
+        <h3>Do u need one more card?</h3>
+    <button onclick="location.href='{{url_for('addcard', id=id)}}'">YES</button>
 <br>
-<form action= "/result" method = "get">
-     <button type ="submit" value = "result">Не брать</button>
-</form>
+<br>
+<button onclick="location.href='{{url_for('result', id=id)}}'">NO</button>
 {% endif %}
 
 

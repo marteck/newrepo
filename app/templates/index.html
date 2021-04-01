@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Velcome</title>
+    <title>Start</title>
 </head>
 <body>
-<h1>Добро пожаловать!</h1>
-<form method = "get">
-    <b>Введите Ваше имя : <input type = "text" name = "username"></b>
-    <input type = "submit" value = "ОК">
+<h1>Welcome to BlackJackTest</h1>
+<form method = "post">
+    <b>Enter your nickname : <input type = "text" name = "username"></b>
+    <br><br>
+    <input type = "submit" value = "Start BlackJack">
 </form>
-
-{% if user %}
-    <h1><i>Здравствуйте, {{ user }}!</i></h1>
-    <p>Чтобы начать игру в 21 нажмите на ссылку</p>
-    <a href="{{ url_for('startgame') }}"> Начать игру в 21 </a>
-{% endif %}
 </body>
 </html>
